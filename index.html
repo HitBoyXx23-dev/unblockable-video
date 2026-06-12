@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unblockable Video</title>
+<style>
+:root{color-scheme:dark;--bg:#05070d;--panel:#0b1220;--panel2:#111827;--line:#263244;--text:#f8fafc;--muted:#94a3b8;--accent:#38bdf8;--accent2:#818cf8;--good:#22c55e;--bad:#ef4444}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(circle at top,#182235,#05070d 55%,#02040a);color:var(--text);font-family:Inter,Segoe UI,system-ui,Arial,sans-serif}.wrap{width:min(1240px,calc(100vw - 28px));margin:auto;padding:24px 0}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}.brand{display:flex;align-items:center;gap:12px}.mark{width:44px;height:44px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 50px rgba(56,189,248,.24)}h1{font-size:23px;line-height:1;margin:0}.sub{margin-top:5px;color:var(--muted);font-size:13px}.topnav{display:flex;gap:10px;flex-wrap:wrap}a{color:var(--accent);text-decoration:none}.button,.icon,.select,.input{border:1px solid var(--line);background:#0c1422;color:var(--text);border-radius:12px;font:inherit}.button,.icon{padding:10px 13px;font-weight:800;cursor:pointer}.button:hover,.icon:hover{border-color:#41516b;background:#121d30}.player{background:#000;border:1px solid rgba(148,163,184,.18);border-radius:26px;overflow:hidden;box-shadow:0 26px 90px rgba(0,0,0,.46)}.stage{position:relative;background:#000;aspect-ratio:16/9;display:grid;place-items:center}.stage canvas{width:100%;height:100%;display:block;background:#000}.center{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}.badge{min-width:92px;height:92px;border-radius:999px;display:grid;place-items:center;background:rgba(15,23,42,.72);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(12px);font-size:18px;font-weight:900;box-shadow:0 18px 55px rgba(0,0,0,.34);padding:0 18px}.hide{display:none}.controls{background:linear-gradient(180deg,#0b0f18,#070a10);border-top:1px solid rgba(148,163,184,.16);padding:14px}.row{display:flex;align-items:center;gap:10px}.row+.row{margin-top:12px}.grow{flex:1}.range{accent-color:var(--accent);height:20px}.time{color:var(--muted);font-variant-numeric:tabular-nums;font-size:13px;min-width:96px;text-align:center}.select,.input{height:38px;padding:0 10px}.input{width:100%}.small{font-size:12px;color:var(--muted)}.pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:7px 10px;background:#0a101c;color:var(--muted);font-size:12px}.dot{width:8px;height:8px;border-radius:99px;background:var(--muted)}.dot.on{background:var(--good)}.dot.bad{background:var(--bad)}.grid{display:grid;grid-template-columns:1.3fr .7fr;gap:16px;margin-top:16px}.card{border:1px solid var(--line);background:linear-gradient(180deg,rgba(15,23,42,.92),rgba(8,13,23,.92));border-radius:20px;padding:16px}.card h2{margin:0 0 12px;font-size:15px}.form{display:grid;gap:10px}.two{display:grid;grid-template-columns:1fr auto;gap:10px}.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{border:1px solid var(--line);border-radius:14px;background:#09101d;padding:12px}.stat b{display:block;font-size:18px}.stat span{font-size:12px;color:var(--muted)}textarea{resize:vertical;min-height:74px}.filebox{border:1px dashed #41516b;border-radius:15px;padding:14px;background:#08101d}.progress{height:8px;background:#111827;border-radius:999px;overflow:hidden;border:1px solid var(--line)}.progress div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2))}body.embed{background:#000}body.embed .wrap{width:100%;padding:0}body.embed .top,body.embed .grid{display:none}body.embed .player{border:0;border-radius:0;box-shadow:none}body.embed .stage{height:calc(100vh - 92px);aspect-ratio:auto}@media(max-width:860px){.top,.row{align-items:stretch;flex-direction:column}.grid,.three,.two,.statgrid{grid-template-columns:1fr}.time{text-align:left}.wrap{width:min(100%,calc(100vw - 16px));padding:8px 0}.player{border-radius:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top">
+<div class="brand"><div class="mark"></div><div><h1>Unblockable Video</h1><div class="sub">Canvas and WebSocket player with no video, audio, or media tags.</div></div></div>
+<div class="topnav"><a class="button" href="/api_doc.html">API Docs</a><span class="pill"><span id="statusDot" class="dot"></span><span id="statusText">Idle</span></span></div>
+</div>
+<div class="player">
+<div id="stage" class="stage"><canvas id="canvas"></canvas><div id="center" class="center"><div id="centerText" class="badge">PLAY</div></div></div>
+<div class="controls">
+<div class="row"><input id="seek" class="range grow" type="range" min="0" max="100" value="0" step="0.01"><div class="time"><span id="currentText">0:00</span> / <span id="durationText">0:00</span></div></div>
+<div class="row"><button id="playButton" class="icon">Play</button><button id="stopButton" class="icon">Stop</button><button id="backButton" class="icon">-10s</button><button id="forwardButton" class="icon">+10s</button><button id="muteButton" class="icon">Mute</button><input id="volume" class="range" type="range" min="0" max="2" step="0.01" value="1"><button id="fullButton" class="icon">Fullscreen</button></div>
+<div class="row"><label class="small">Speed <select id="speedBox" class="select"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></label><label class="small">Width <select id="widthBox" class="select"><option>640</option><option selected>960</option><option>1280</option><option>1600</option></select></label><label class="small">FPS <select id="fpsChoice" class="select"><option>24</option><option>30</option><option selected>60</option><option>90</option><option>120</option></select></label><label class="small">Quality <input id="qualityBox" class="input" type="number" min="35" max="95" value="78" style="width:76px"></label></div>
+</div>
+</div>
+<div class="grid">
+<div class="card"><h2>Source</h2><div class="form"><div class="two"><input id="srcInput" class="input" placeholder="/media/input.mp4 or https://example.com/video.mp4"><button id="loadButton" class="button">Load</button></div><div class="filebox"><div class="two"><input id="fileInput" type="file" accept="video/*"><button id="uploadButton" class="button">Upload</button></div><div class="progress" style="margin-top:10px"><div id="uploadBar"></div></div><div id="uploadText" class="small" style="margin-top:8px">Upload saves into the server media folder and returns an API URL.</div></div><div class="three"><button id="refreshUploads" class="button">Refresh Uploads</button><select id="uploadList" class="select"></select><button id="useUpload" class="button">Use Selected</button></div></div></div>
+<div class="card"><h2>Stats</h2><div class="statgrid"><div class="stat"><b id="drawFpsText">0</b><span>draw fps</span></div><div class="stat"><b id="receivedText">0</b><span>received</span></div><div class="stat"><b id="droppedText">0</b><span>dropped</span></div><div class="stat"><b id="sizeText">0x0</b><span>source</span></div></div></div>
+<div class="card"><h2>Embed</h2><div class="form"><textarea id="embedText" class="input" readonly></textarea><button id="copyEmbed" class="button">Copy Embed</button><div class="small">Use the custom source tag on another site and load the helper script.</div></div></div>
+<div class="card"><h2>API</h2><div class="small">Upload endpoint: POST /api/upload with multipart field file. Render start command: python server.py --host 0.0.0.0 --port $PORT</div></div>
+</div>
+</div>
+<script>
+const canvas=document.getElementById('canvas');
+const ctx=canvas.getContext('2d',{alpha:false});
+const stage=document.getElementById('stage');
+const center=document.getElementById('center');
+const centerText=document.getElementById('centerText');
+const statusDot=document.getElementById('statusDot');
+const statusText=document.getElementById('statusText');
+const playButton=document.getElementById('playButton');
+const stopButton=document.getElementById('stopButton');
+const backButton=document.getElementById('backButton');
+const forwardButton=document.getElementById('forwardButton');
+const muteButton=document.getElementById('muteButton');
+const fullButton=document.getElementById('fullButton');
+const seek=document.getElementById('seek');
+const volume=document.getElementById('volume');
+const currentText=document.getElementById('currentText');
+const durationText=document.getElementById('durationText');
+const speedBox=document.getElementById('speedBox');
+const widthBox=document.getElementById('widthBox');
+const fpsChoice=document.getElementById('fpsChoice');
+const qualityBox=document.getElementById('qualityBox');
+const srcInput=document.getElementById('srcInput');
+const loadButton=document.getElementById('loadButton');
+const fileInput=document.getElementById('fileInput');
+const uploadButton=document.getElementById('uploadButton');
+const uploadBar=document.getElementById('uploadBar');
+const uploadText=document.getElementById('uploadText');
+const uploadList=document.getElementById('uploadList');
+const refreshUploads=document.getElementById('refreshUploads');
+const useUpload=document.getElementById('useUpload');
+const drawFpsText=document.getElementById('drawFpsText');
+const receivedText=document.getElementById('receivedText');
+const droppedText=document.getElementById('droppedText');
+const sizeText=document.getElementById('sizeText');
+const embedText=document.getElementById('embedText');
+const copyEmbed=document.getElementById('copyEmbed');
+let source='';
+let duration=0;
+let playing=false;
+let muted=false;
+let startedAt=0;
+let startMediaTime=0;
+let frameSocket=null;
+let audioSocket=null;
+let latestBitmap=null;
+let pendingBuffer=null;
+let decoding=false;
+let audioContext=null;
+let gainNode=null;
+let nextAudioTime=0;
+let audioNodes=[];
+let framesDrawn=0;
+let framesReceived=0;
+let framesDropped=0;
+let lastFramesDrawn=0;
+let lastStatsTime=performance.now();
+function params(){return new URLSearchParams(location.search)}
+function wsBase(){return (location.protocol==='https:'?'wss://':'ws://')+location.host}
+function formatTime(value){value=Math.max(0,Number(value)||0);let h=Math.floor(value/3600);let m=Math.floor(value%3600/60);let s=Math.floor(value%60);return h?`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${m}:${String(s).padStart(2,'0')}`}
+function mediaTime(){return playing?startMediaTime+(performance.now()-startedAt)/1000*Number(speedBox.value):startMediaTime}
+function setStatus(text,state){statusText.textContent=text;statusDot.className='dot '+(state||'')}
+function showCenter(text){centerText.textContent=text;center.classList.remove('hide')}
+function hideCenter(){center.classList.add('hide')}
+function updateEmbed(){let value=srcInput.value.trim()||source||'/media/input.mp4';let base=location.origin;embedText.value=`<src width="960px" height="540px">${value}</src>\n<script src="${base}/api/player.js"><\/script>`}
+async function loadMeta(){let url='/api/status'+(source?'?src='+encodeURIComponent(source):'');let res=await fetch(url);let data=await res.json();if(!source&&data.source)source=data.source;duration=Number(data.duration||0);durationText.textContent=formatTime(duration);sizeText.textContent=(data.width||0)+'x'+(data.height||0);srcInput.value=data.source||source||'';updateEmbed();return data}
+async function setSource(value){source=value.trim();if(source){let res=await fetch('/api/source',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({src:source})});let data=await res.json();if(!data.ok){setStatus(data.error||'Source error','bad');return}}await loadMeta();stop()}
+function closeSockets(){if(frameSocket){frameSocket.onclose=null;frameSocket.close();frameSocket=null}if(audioSocket){audioSocket.onclose=null;audioSocket.close();audioSocket=null}}
+function ensureAudio(){if(audioContext)return;if(!window.AudioContext&&!window.webkitAudioContext)return;audioContext=new (window.AudioContext||window.webkitAudioContext)();gainNode=audioContext.createGain();gainNode.gain.value=muted?0:Number(volume.value);gainNode.connect(audioContext.destination);nextAudioTime=audioContext.currentTime+0.12}
+function clearAudio(){for(let node of audioNodes){try{node.stop()}catch(error){}}audioNodes=[];if(audioContext)nextAudioTime=audioContext.currentTime+0.12}
+function playPcm(buffer){if(!audioContext||!gainNode)return;let samples=new Int16Array(buffer);let channels=2;let count=Math.floor(samples.length/channels);if(count<=0)return;let audioBuffer=audioContext.createBuffer(channels,count,48000);for(let channel=0;channel<channels;channel++){let data=audioBuffer.getChannelData(channel);for(let i=0;i<count;i++){data[i]=samples[i*channels+channel]/32768}}let node=audioContext.createBufferSource();node.buffer=audioBuffer;node.connect(gainNode);node.onended=function(){let index=audioNodes.indexOf(node);if(index>-1)audioNodes.splice(index,1)};let when=Math.max(nextAudioTime,audioContext.currentTime+0.03);node.start(when);nextAudioTime=when+audioBuffer.duration;audioNodes.push(node);if(audioNodes.length>32){try{audioNodes.shift().stop()}catch(error){}}}
+async function decodePending(){if(decoding||!pendingBuffer)return;decoding=true;let buffer=pendingBuffer;pendingBuffer=null;try{let view=new DataView(buffer);let magic=String.fromCharCode.apply(null,new Uint8Array(buffer.slice(0,4)));if(magic==='IMG1'){let width=view.getUint16(4,true);let height=view.getUint16(6,true);let size=view.getUint32(16,true);let jpg=buffer.slice(20,20+size);let bitmap=await createImageBitmap(new Blob([jpg],{type:'image/jpeg'}));if(latestBitmap)latestBitmap.close();latestBitmap=bitmap;if(width>0&&height>0&&(canvas.width!==width||canvas.height!==height)){canvas.width=width;canvas.height=height}}}catch(error){}decoding=false;if(pendingBuffer)decodePending()}
+function connectFrames(start){let query=new URLSearchParams({src:source,start:String(start),speed:speedBox.value,width:widthBox.value,fps:fpsChoice.value,quality:qualityBox.value});frameSocket=new WebSocket(wsBase()+'/api/frames?'+query.toString());frameSocket.binaryType='arraybuffer';frameSocket.onopen=function(){setStatus('Connected','on')};frameSocket.onclose=function(){if(playing)setStatus('Video ended','bad')};frameSocket.onmessage=function(event){if(typeof event.data==='string')return;framesReceived++;if(pendingBuffer)framesDropped++;pendingBuffer=event.data;decodePending()}}
+function connectAudio(start){ensureAudio();clearAudio();if(audioContext&&audioContext.state==='suspended')audioContext.resume();let query=new URLSearchParams({src:source,start:String(start),speed:speedBox.value});audioSocket=new WebSocket(wsBase()+'/api/audio?'+query.toString());audioSocket.binaryType='arraybuffer';audioSocket.onmessage=function(event){if(typeof event.data==='string')return;playPcm(event.data)}}
+function startPlayback(){if(playing)return;if(!source&&srcInput.value.trim())source=srcInput.value.trim();if(!source){setStatus('Load a source first','bad');return}ensureAudio();if(audioContext&&audioContext.state==='suspended')audioContext.resume();playing=true;startedAt=performance.now();hideCenter();playButton.textContent='Pause';connectFrames(startMediaTime);connectAudio(startMediaTime)}
+function pause(){if(!playing)return;startMediaTime=mediaTime();playing=false;closeSockets();clearAudio();showCenter('PLAY');playButton.textContent='Play';setStatus('Paused','')}
+function stop(){startMediaTime=0;playing=false;closeSockets();clearAudio();seek.value='0';currentText.textContent='0:00';showCenter('PLAY');playButton.textContent='Play';setStatus('Stopped','')}
+function restartAt(time){startMediaTime=Math.max(0,Math.min(duration||time,time));startedAt=performance.now();closeSockets();clearAudio();if(playing){connectFrames(startMediaTime);connectAudio(startMediaTime)}}
+function seekToPercent(value){let time=duration?duration*Number(value)/100:0;restartAt(time);currentText.textContent=formatTime(time)}
+function jump(seconds){restartAt(mediaTime()+seconds)}
+function drawLoop(){if(latestBitmap){ctx.drawImage(latestBitmap,0,0,canvas.width,canvas.height);framesDrawn++}let now=performance.now();if(now-lastStatsTime>=1000){drawFpsText.textContent=String(framesDrawn-lastFramesDrawn);receivedText.textContent=String(framesReceived);droppedText.textContent=String(framesDropped);lastFramesDrawn=framesDrawn;lastStatsTime=now}requestAnimationFrame(drawLoop)}
+function timeLoop(){let time=mediaTime();currentText.textContent=formatTime(time);if(duration>0&&!seek.matches(':active'))seek.value=String(Math.min(100,time/duration*100));if(duration>0&&time>=duration&&playing)stop();requestAnimationFrame(timeLoop)}
+async function refreshUploadList(){let res=await fetch('/api/uploads');let data=await res.json();uploadList.innerHTML='';for(let file of data.files||[]){let option=document.createElement('option');option.value=file.src;option.textContent=file.name;uploadList.appendChild(option)}}
+function uploadVideo(){let file=fileInput.files&&fileInput.files[0];if(!file){uploadText.textContent='Choose a video file first.';return}let data=new FormData();data.append('file',file);let xhr=new XMLHttpRequest();xhr.open('POST','/api/upload?autoplay=true');xhr.upload.onprogress=function(event){if(event.lengthComputable)uploadBar.style.width=Math.round(event.loaded/event.total*100)+'%'};xhr.onload=async function(){let payload={};try{payload=JSON.parse(xhr.responseText||'{}')}catch(error){}if(xhr.status>=200&&xhr.status<300&&payload.ok){source=payload.src;srcInput.value=source;uploadText.textContent='Uploaded '+payload.src;await loadMeta();stop();await refreshUploadList()}else{uploadText.textContent=payload.error||'Upload failed'}};xhr.onerror=function(){uploadText.textContent='Upload failed'};xhr.send(data)}
+playButton.onclick=function(){playing?pause():startPlayback()};
+stopButton.onclick=stop;
+backButton.onclick=function(){jump(-10)};
+forwardButton.onclick=function(){jump(10)};
+seek.oninput=function(){seekToPercent(seek.value)};
+speedBox.onchange=function(){restartAt(mediaTime())};
+qualityBox.onchange=function(){if(playing)restartAt(mediaTime())};
+widthBox.onchange=function(){if(playing)restartAt(mediaTime())};
+fpsChoice.onchange=function(){if(playing)restartAt(mediaTime())};
+volume.oninput=function(){if(gainNode)gainNode.gain.value=muted?0:Number(volume.value)};
+muteButton.onclick=function(){muted=!muted;muteButton.textContent=muted?'Unmute':'Mute';if(gainNode)gainNode.gain.value=muted?0:Number(volume.value)};
+fullButton.onclick=function(){if(stage.requestFullscreen)stage.requestFullscreen()};
+loadButton.onclick=function(){setSource(srcInput.value)};
+uploadButton.onclick=uploadVideo;
+refreshUploads.onclick=refreshUploadList;
+useUpload.onclick=function(){if(uploadList.value)setSource(uploadList.value)};
+copyEmbed.onclick=async function(){updateEmbed();try{await navigator.clipboard.writeText(embedText.value)}catch(error){embedText.select();document.execCommand('copy')}};
+stage.onclick=function(event){if(event.target===canvas||event.target===center||event.target===centerText){playing?pause():startPlayback()}};
+document.addEventListener('keydown',function(event){if(event.target&&['INPUT','TEXTAREA','SELECT'].includes(event.target.tagName))return;if(event.code==='Space'){event.preventDefault();playing?pause():startPlayback()}if(event.code==='ArrowLeft')jump(-5);if(event.code==='ArrowRight')jump(5);if(event.key==='f')fullButton.click();if(event.key==='m')muteButton.click()});
+(function init(){let query=params();if(query.get('embed')==='1')document.body.classList.add('embed');source=query.get('src')||'';if(source)setSource(source);else loadMeta();refreshUploadList();drawLoop();timeLoop()})();
+</script>
+</body>
+</html>
