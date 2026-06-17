@@ -2,25 +2,216 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Unblockable Video API</title>
 <style>
-:root{color-scheme:dark;--bg:#060914;--panel:#0d1422;--line:#263244;--text:#f8fafc;--muted:#94a3b8;--accent:#38bdf8}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,system-ui,Arial,sans-serif}.wrap{width:min(980px,calc(100vw - 28px));margin:auto;padding:28px 0}a{color:var(--accent)}h1{margin:0 0 6px;font-size:28px}.sub{color:var(--muted);margin-bottom:22px}.card{border:1px solid var(--line);background:var(--panel);border-radius:18px;padding:18px;margin:14px 0}h2{font-size:18px;margin:0 0 12px}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}pre{overflow:auto;background:#050814;border:1px solid var(--line);border-radius:14px;padding:14px;color:#dbeafe}.row{display:grid;grid-template-columns:190px 1fr;gap:12px;border-top:1px solid var(--line);padding:12px 0}.row:first-of-type{border-top:0}.muted{color:var(--muted)}
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #111827;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+}
+
+.page {
+  width: min(1000px, calc(100vw - 24px));
+  margin: 0 auto;
+  padding: 24px 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+h1,
+h2 {
+  margin: 0;
+}
+
+h1 {
+  font-size: 28px;
+}
+
+h2 {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+p {
+  color: #d1d5db;
+  line-height: 1.5;
+}
+
+a {
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+.card {
+  background: #1f2937;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.endpoint {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid #374151;
+}
+
+.endpoint:first-of-type {
+  border-top: 0;
+}
+
+code,
+pre {
+  font-family: Consolas, Monaco, monospace;
+}
+
+code {
+  color: #bfdbfe;
+}
+
+pre {
+  margin: 0;
+  padding: 14px;
+  overflow: auto;
+  border-radius: 10px;
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+@media (max-width: 700px) {
+  .header,
+  .endpoint {
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-<h1>Unblockable Video API</h1>
-<div class="sub">Canvas video streaming without video, audio, or media tags.</div>
-<div class="card"><h2>Render Hosting</h2><pre>Build Command: pip install -r requirements.txt
-Start Command: python server.py --host 0.0.0.0 --port $PORT</pre><p class="muted">FFmpeg must be available on the server for audio and best video performance.</p></div>
-<div class="card"><h2>Embed</h2><p class="muted">Place this on another page. The helper script replaces the custom source tag with the player iframe.</p><pre>&lt;src width="960px" height="540px"&gt;https://example.com/video.mp4&lt;/src&gt;
-&lt;script src="https://your-render-app.onrender.com/api/player.js"&gt;&lt;/script&gt;</pre><p class="muted">This also works:</p><pre>&lt;unblockable-video src="https://example.com/video.mp4" width="960px" height="540px"&gt;&lt;/unblockable-video&gt;
-&lt;script src="https://your-render-app.onrender.com/api/player.js"&gt;&lt;/script&gt;</pre></div>
-<div class="card"><h2>HTTP API</h2><div class="row"><code>GET /</code><span>Player page.</span></div><div class="row"><code>GET /health</code><span>Health check for Render.</span></div><div class="row"><code>GET /api_doc.html</code><span>This documentation.</span></div><div class="row"><code>GET /api/status?src=...</code><span>Returns metadata and current server settings.</span></div><div class="row"><code>POST /api/source</code><span>Sets the default source. JSON body: <code>{"src":"/media/input.mp4"}</code></span></div><div class="row"><code>POST /api/upload</code><span>Uploads a video. Multipart field name: <code>file</code>. Returns <code>src</code> and metadata.</span></div><div class="row"><code>GET /api/uploads</code><span>Lists uploaded videos in the media folder.</span></div><div class="row"><code>DELETE /api/upload/{name}</code><span>Deletes an uploaded video.</span></div><div class="row"><code>GET /api/player.js</code><span>Embed helper script for custom source tags.</span></div><div class="row"><code>GET /api/embed?src=...</code><span>Returns ready-to-copy embed HTML.</span></div></div>
-<div class="card"><h2>WebSocket API</h2><div class="row"><code>/api/frames</code><span>Binary JPEG frame stream. Query: <code>src</code>, <code>start</code>, <code>speed</code>, <code>width</code>, <code>fps</code>, <code>quality</code>.</span></div><div class="row"><code>/api/audio</code><span>Binary 48 kHz stereo PCM stream. Query: <code>src</code>, <code>start</code>, <code>speed</code>.</span></div></div>
-<div class="card"><h2>Upload Example</h2><pre>curl -F "file=@video.mp4" https://your-render-app.onrender.com/api/upload</pre></div>
-<div class="card"><p><a href="/">Back to player</a></p></div>
+<div class="page">
+  <header class="header">
+    <div>
+      <h1>Unblockable Video API</h1>
+      <p>Canvas video streaming without video, audio, or media tags.</p>
+    </div>
+    <a href="/">Back to Player</a>
+  </header>
+
+  <section class="card">
+    <h2>Render Hosting</h2>
+    <pre>Build Command: pip install -r requirements.txt
+Start Command: python server.py --host 0.0.0.0 --port $PORT</pre>
+    <p>FFmpeg must be available on the server for audio and best video performance.</p>
+  </section>
+
+  <section class="card">
+    <h2>HTTP API</h2>
+
+    <div class="endpoint">
+      <code>GET /</code>
+      <span>Player page.</span>
+    </div>
+
+    <div class="endpoint">
+      <code>GET /health</code>
+      <span>Health check for Render.</span>
+    </div>
+
+    <div class="endpoint">
+      <code>GET /api_doc.html</code>
+      <span>API documentation page.</span>
+    </div>
+
+    <div class="endpoint">
+      <code>GET /api/status?src=...</code>
+      <span>Returns video metadata and current server settings.</span>
+    </div>
+
+    <div class="endpoint">
+      <code>POST /api/source</code>
+      <span>Sets the default source. JSON body: <code>{"src":"/media/input.mp4"}</code></span>
+    </div>
+
+    <div class="endpoint">
+      <code>POST /api/upload</code>
+      <span>Uploads a video. Multipart field name: <code>file</code>. Returns <code>src</code> and metadata.</span>
+    </div>
+
+    <div class="endpoint">
+      <code>GET /api/uploads</code>
+      <span>Lists uploaded videos in the media folder.</span>
+    </div>
+
+    <div class="endpoint">
+      <code>DELETE /api/upload/{name}</code>
+      <span>Deletes an uploaded video.</span>
+    </div>
+
+    <div class="endpoint">
+      <code>GET /api/player.js</code>
+      <span>Embed helper script for custom source tags.</span>
+    </div>
+
+    <div class="endpoint">
+      <code>GET /api/embed?src=...</code>
+      <span>Returns ready-to-copy embed HTML.</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>WebSocket API</h2>
+
+    <div class="endpoint">
+      <code>/api/frames</code>
+      <span>Binary JPEG frame stream. Query: <code>src</code>, <code>start</code>, <code>speed</code>, <code>width</code>, <code>fps</code>, <code>quality</code>.</span>
+    </div>
+
+    <div class="endpoint">
+      <code>/api/audio</code>
+      <span>Binary 48 kHz stereo PCM stream. Query: <code>src</code>, <code>start</code>, <code>speed</code>.</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Upload Example</h2>
+    <pre>curl -F "file=@video.mp4" https://your-render-app.onrender.com/api/upload</pre>
+  </section>
+
+  <section class="card">
+    <h2>Source Example</h2>
+    <pre>curl -X POST https://your-render-app.onrender.com/api/source \
+  -H "content-type: application/json" \
+  -d "{\"src\":\"/media/input.mp4\"}"</pre>
+  </section>
+
+  <section class="card">
+    <h2>Embed Example</h2>
+    <pre>&lt;src width="960px" height="540px"&gt;https://example.com/video.mp4&lt;/src&gt;
+&lt;script src="https://your-render-app.onrender.com/api/player.js"&gt;&lt;/script&gt;</pre>
+  </section>
+
+  <section class="card">
+    <h2>Alternative Embed</h2>
+    <pre>&lt;unblockable-video src="https://example.com/video.mp4" width="960px" height="540px"&gt;&lt;/unblockable-video&gt;
+&lt;script src="https://your-render-app.onrender.com/api/player.js"&gt;&lt;/script&gt;</pre>
+  </section>
 </div>
 </body>
 </html>
